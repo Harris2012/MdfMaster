@@ -1,0 +1,150 @@
+﻿<mui:ModernWindow x:Class="MdfMaster.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mui="http://firstfloorsoftware.com/ModernUI"
+        Title="mui" IsTitleVisible="True"
+        xmlns:i="clr-namespace:System.Windows.Input;assembly=PresentationCore"
+        Style="{StaticResource BlankWindow}">
+
+    <Window.Resources>
+        <i:RoutedCommand x:Key="RunCommand" />
+        <i:RoutedCommand x:Key="RefreshDatabaseCommand" />
+        <i:RoutedCommand x:Key="ViewSchemaCommand" />
+        <i:RoutedCommand x:Key="Top10Command" />
+        <i:RoutedCommand x:Key="ModifySpCommand" />
+        <i:RoutedCommand x:Key="DropSpCommand" />
+    </Window.Resources>
+    <Grid Style="{StaticResource ContentRoot}">
+        <ScrollViewer>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Grid.Column="0">MDF File</TextBlock>
+                    <TextBox Grid.Column="1" Name="FilePathTextBox">D:\Data\HarrisMaster.mdf</TextBox>
+                    <Button Grid.Column="2" Click="BrowseMdfButton_Click">浏览</Button>
+                    <Button Grid.Column="3" Command="{Binding Mode=OneWay, Source={StaticResource RefreshDatabaseCommand}}">刷新</Button>
+                </Grid>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="3*" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="7*" />
+                    </Grid.ColumnDefinitions>
+                    <TreeView Grid.Row="1" Grid.Column="0">
+                        <TreeViewItem Header="Root" IsExpanded="True">
+                            <TreeViewItem.Items>
+                                <TreeViewItem Name="TableTree" Header="Table">
+                                    <TreeViewItem.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}">
+                                                <TextBlock.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem
+                                                        Header="Top 10"
+                                                        Command="{StaticResource Top10Command}"
+                                                        CommandParameter="{Binding Name}"/>
+                                                        <MenuItem
+                                                        Header="View Schema"
+                                                        Command="{StaticResource ViewSchemaCommand}"
+                                                        CommandParameter="{Binding Name}"/>
+                                                    </ContextMenu>
+                                                </TextBlock.ContextMenu>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </TreeViewItem.ItemTemplate>
+                                </TreeViewItem>
+                                <TreeViewItem Name="SpTree" Header="Stored Procedure">
+                                    <TreeViewItem.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Name}">
+                                                <TextBlock.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem
+                                                        Header="Modify"
+                                                        Command="{StaticResource ModifySpCommand}"
+                                                        CommandParameter="{Binding Name}" />
+                                                        <MenuItem
+                                                        Header="Drop"
+                                                        Command="{StaticResource DropSpCommand}"
+                                                        CommandParameter="{Binding Name}"/>
+                                                    </ContextMenu>
+                                                </TextBlock.ContextMenu>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </TreeViewItem.ItemTemplate>
+                                </TreeViewItem>
+                                <TreeViewItem Name="FkTree" Header="Foreign Key">
+                                    <TreeViewItem.ItemTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding FkName}">
+                                                <TextBlock.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Drop" />
+                                                    </ContextMenu>
+                                                </TextBlock.ContextMenu>
+                                            </TextBlock>
+                                        </DataTemplate>
+                                    </TreeViewItem.ItemTemplate>
+                                </TreeViewItem>
+                            </TreeViewItem.Items>
+                        </TreeViewItem>
+                    </TreeView>
+                    <GridSplitter Grid.Column="1" VerticalAlignment="Stretch" HorizontalAlignment="Center" Width="2" />
+                    <Grid Grid.Column="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <TextBox Grid.Row="0" Name="CommandTextBox" AcceptsReturn="True" AcceptsTab="True">
+                            <TextBox.ContextMenu>
+                                <ContextMenu>
+                                    <MenuItem Header="Clear" />
+                                </ContextMenu>
+                            </TextBox.ContextMenu>
+                        </TextBox>
+                        <Grid Grid.Row="1">
+                            <Button Command="{Binding Mode=OneWay, Source={StaticResource RunCommand}}">Run</Button>
+                        </Grid>
+                        <GridSplitter Height="2" HorizontalAlignment="Stretch" VerticalAlignment="Center" Grid.Row="2" />
+                        <Grid Name="ResultGrid" Grid.Row="3"></Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{StaticResource RunCommand}" />
+    </Window.InputBindings>
+    <Window.CommandBindings>
+        <CommandBinding
+            Command="{StaticResource RunCommand}"
+            CanExecute="RunCommand_CanExecute"
+            Executed="RunCommand_Executed"/>
+        <CommandBinding
+            Command="{StaticResource ViewSchemaCommand}"
+            Executed="ViewSchemaCommand_Executed"/>
+        <CommandBinding
+            Command="{StaticResource Top10Command}"
+            Executed="Top10Command_Executed"/>
+        <CommandBinding
+            Command="{StaticResource ModifySpCommand}"
+            Executed="ModifySpCommand_Executed"/>
+        <CommandBinding
+            Command="{StaticResource DropSpCommand}"
+            Executed="DropSpCommand_Executed" />
+        <CommandBinding
+            Command="{StaticResource RefreshDatabaseCommand}"
+            Executed="RefreshDatabaseCommand_Executed"/>
+    </Window.CommandBindings>
+</mui:ModernWindow>
